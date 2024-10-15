@@ -13,6 +13,7 @@ session_start();
         $email_adm = "dbOficina@gmail.com";
         $senha_adm = "administrador1479";
 
+        
         if ($email === $email_adm && $password === $senha_adm) {
             // Redireciona para a página de administrador
             echo '<script>window.location.href = "../PHP/adm/cliente.php"; </script>';
