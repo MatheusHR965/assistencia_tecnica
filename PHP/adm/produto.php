@@ -7,21 +7,21 @@ $success = '';
 
 // Inserir/Atualizar Produto
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST["nome_prod"], $_POST["preco_venda_prod"], $_POST["estoque_minimo_prod"], $_POST["status_prod"])) {
-        if (empty($_POST["nome_prod"]) || empty($_POST["preco_venda_prod"]) || empty($_POST["estoque_minimo_prod"]) || empty($_POST["status_prod"])) {
+    if (isset($_POST["nome_prod"], $_POST["preco_venda"], $_POST["estoque_minimo"], $_POST["status_prod"])) {
+        if (empty($_POST["nome_prod"]) || empty($_POST["preco_venda"]) || empty($_POST["estoque_minimo"]) || empty($_POST["status_prod"])) {
             $erro = "Todos os campos são obrigatórios.";
         } else {
             $id_prod = isset($_POST["id_prod"]) ? $_POST["id_prod"] : -1;
             $nome_prod = $_POST["nome_prod"];
             $marca = $_POST["marca"];
             $desc_prod = $_POST["desc_prod"];
-            $preco_venda_prod = $_POST["preco_venda_prod"];
-            $estoque_minimo_prod = $_POST["estoque_minimo_prod"];
+            $preco_venda_prod = str_replace(['R$ ','.',','], ['', '', '.'], $_POST["preco_venda"]);
+            $estoque_minimo = $_POST["estoque_minimo"];
             $status_prod = $_POST["status_prod"];
 
             if ($id_prod == -1) { // Inserir novo produto
                 $stmt = $mysqli->prepare("INSERT INTO Produto (nome_prod, marca, desc_prod, preco_venda, estoque_minimo, status_prod) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("sssdis", $nome_prod, $marca, $desc_prod, $preco_venda_prod, $estoque_minimo_prod, $status_prod);
+                $stmt->bind_param("sssdis", $nome_prod, $marca, $desc_prod, $preco_venda_prod, $estoque_minimo, $status_prod);
 
                 if ($stmt->execute()) {
                     $success = "Produto cadastrado com sucesso.";
@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             } else { // Atualizar produto existente
                 $stmt = $mysqli->prepare("UPDATE Produto SET nome_prod = ?, marca = ?, desc_prod = ?, preco_venda = ?, estoque_minimo = ?, status_prod = ? WHERE id_prod = ?");
-                $stmt->bind_param("sssdisi", $nome_prod, $marca, $desc_prod, $preco_venda_prod, $estoque_minimo_prod, $status_prod, $id_prod);
+                $stmt->bind_param("sssdisi", $nome_prod, $marca, $desc_prod, $preco_venda_prod, $estoque_minimo, $status_prod, $id_prod);
 
                 if ($stmt->execute()) {
                     $success = "Produto atualizado com sucesso.";
@@ -89,13 +89,13 @@ $result = $mysqli->query("SELECT * FROM Produto WHERE status_prod != 'Desabilita
         <input type="text" name="desc_prod"
             value="<?= isset($_POST['desc_prod']) ? htmlspecialchars($_POST['desc_prod']) : '' ?>"><br><br>
 
-        <label for="preco_venda_produto">Preço do Produto:</label><br>
-        <input type="text" id="preco_venda_produto" name="preco_venda_produto" placeholder="R$ 0,00"
-            value="<?= isset($_POST['preco_venda_produto']) ? htmlspecialchars($_POST['preco_venda_produto']) : '' ?>"
+        <label for="preco_venda">Preço do Produto:</label><br>
+        <input type="text" id="preco_venda" name="preco_venda" placeholder="R$ 0,00"
+            value="<?= isset($_POST['preco_venda']) ? htmlspecialchars($_POST['preco_venda']) : '' ?>"
             required><br><br>
 
         <script>
-            document.getElementById('preco_venda_produto').addEventListener('input', function (e) {
+            document.getElementById('preco_venda').addEventListener('input', function (e) {
                 // Remove qualquer caractere não numérico
                 let value = e.target.value.replace(/[^0-9]/g, '');
 
@@ -124,9 +124,9 @@ $result = $mysqli->query("SELECT * FROM Produto WHERE status_prod != 'Desabilita
             });
         </script>
 
-        <label for="estoque_minimo_prod">Estoque Mínimo:</label><br>
-        <input type="number" name="estoque_minimo_prod" min="1"
-            value="<?= isset($_POST['estoque_minimo_prod']) ? htmlspecialchars($_POST['estoque_minimo_prod']) : '' ?>"
+        <label for="estoque_minimo">Estoque Mínimo:</label><br>
+        <input type="number" name="estoque_minimo" min="1"
+            value="<?= isset($_POST['estoque_minimo']) ? htmlspecialchars($_POST['estoque_minimo']) : '' ?>"
             required><br><br>
 
         <label for="status_prod">Status:</label><br>
