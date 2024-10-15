@@ -1,72 +1,67 @@
 <?php
+session_start();
+
 // Incluindo o arquivo de conexão com o banco de dados
 include_once '../PHP/includes/dbconnect.php';
 
 // Verificando se a conexão foi criada corretamente
-if ($mysqli === false) {
-    die("Erro: A conexão com o banco de dados falhou.");
+if (!isset($mysqli)) {
+    die("Erro: A conexão com o banco de dados não foi estabelecida.");
 }
 
 // Verificando se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nome = htmlspecialchars($_POST['nome']);
-    $nome_social = isset($_POST['nomesocial']) ? htmlspecialchars($_POST['nomesocial']) : null;
-    $email = htmlspecialchars($_POST['email']);
-    $telefone = isset($_POST['telefone']) ? htmlspecialchars($_POST['telefone']) : null;
-    $celular = isset($_POST['celular']) ? htmlspecialchars($_POST['celular']) : null;
-    $data_nascimento = isset($_POST['data_nascimento']) ? $_POST['data_nascimento'] : null;
-    $tipo_documento = htmlspecialchars($_POST['tipo_documento']);
-    $documento = htmlspecialchars($_POST['documento']);
-    $uf = htmlspecialchars($_POST['uf']);
-    $cidade = htmlspecialchars($_POST['cidade']);
-    $bairro = htmlspecialchars($_POST['bairro']);
-    $rua = htmlspecialchars($_POST['rua']);
-    $numero = htmlspecialchars($_POST['numero']);
-    $complemento = isset($_POST['complemento']) ? htmlspecialchars($_POST['complemento']) : null;
-    $cep = isset($_POST['cep']) ? htmlspecialchars($_POST['cep']) : null;
-    $senha = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $data_cadastro = date('Y-m-d H:i:s');
-    $status = 'ativo';
+    // Coletando os dados do formulário
+    $nome = $_POST['nome'];
+    $nome_social = $_POST['nomesocial'] ?? null;
+    $email = $_POST['email'];
+    $telefone = $_POST['telefone'] ?? null;
+    $celular = $_POST['celular'] ?? null;
+    $data_nascimento = $_POST['data_nascimento'] ?? null;
+    $tipo_documento = $_POST['tipo_documento'];
+    $documento = $_POST['documento'];
+    $uf = $_POST['uf'];
+    $cidade = $_POST['cidade'];
+    $bairro = $_POST['bairro'];
+    $rua = $_POST['rua'];
+    $numero = $_POST['numero'];
+    $complemento = $_POST['complemento'] ?? null;
+    $cep = $_POST['cep'] ?? null;
+    $senha = $_POST['password']; // Criptografando a senha
+    $data_cadastro = date('Y-m-d H:i:s'); // Pegando a data e hora atual
+    $status = 'ativo'; // Definindo o status do usuário como ativo
 
-    // Verificando se o email já está cadastrado
-    $sql_verifica_email = "SELECT id_usu FROM Usuario WHERE email_usu = ?";
-    $stmt_verifica_email = $mysqli->prepare($sql_verifica_email);
-    $stmt_verifica_email->bind_param("s", $email);
-    $stmt_verifica_email->execute();
-    $stmt_verifica_email->store_result();
+    // Criando a query de inserção
+    $sql = "INSERT INTO Usuario (data_cadastro_usu, nome_usu, nome_social, email_usu, telefone_usu, celular_usu, data_nascimento, tipo_do_documento_usu, documento_usu, uf, cidade, bairro, rua, numero, complemento, cep, status_usu, senha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    if ($stmt_verifica_email->num_rows > 0) {
-        echo "<script>alert('E-mail já cadastrado. Por favor, use outro.');</script>";
-    } else {
-        // Inserindo os dados no banco de dados
-        $sql = "INSERT INTO Usuario (data_cadastro_usu, nome_usu, nome_social, email_usu, telefone_usu, celular_usu, data_nascimento, tipo_do_documento_usu, documento_usu, uf, cidade, bairro, rua, numero, complemento, cep, status_usu, senha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        $stmt = $mysqli->prepare($sql);
-        if ($stmt === false) {
-            die("Erro na preparação da declaração: " . $mysqli->error);
-        }
-
-        $stmt->bind_param("ssssssssssssssssss", $data_cadastro, $nome, $nome_social, $email, $telefone, $celular, $data_nascimento, $tipo_documento, $documento, $uf, $cidade, $bairro, $rua, $numero, $complemento, $cep, $status, $senha);
-
-        if ($stmt->execute()) {
-            // Redireciona o usuário para a página index.php após o cadastro bem-sucedido
-            echo "<script>alert('Usuário cadastrado com sucesso!'); window.location.href='../index.php';</script>";
-        } else {
-            error_log('Erro ao executar o cadastro: ' . $stmt->error); // Log do erro
-            echo "<script>alert('Ocorreu um erro ao processar seu cadastro. Por favor, tente novamente.');</script>";
-        }
-
-        $stmt->close();
+    // Preparando a declaração para evitar SQL Injection
+    $stmt = $mysqli->prepare($sql);
+    if ($stmt === false) {
+        die("Erro na preparação da declaração: " . $mysqli->error);
     }
 
-    $stmt_verifica_email->close();
+    // Vinculando os parâmetros da query aos valores recebidos do formulário
+    $stmt->bind_param("ssssssssssssssssss", $data_cadastro, $nome, $nome_social, $email, $telefone, $celular, $data_nascimento, $tipo_documento, $documento, $uf, $cidade, $bairro, $rua, $numero, $complemento, $cep, $status, $senha);
+
+    // Executando a query
+    if ($stmt->execute()) {
+        // Redirecionando para uma página de sucesso ou exibindo uma mensagem de sucesso
+        echo "<script>alert('Usuário cadastrado com sucesso!'); window.location.href = 'index.php'; </script>";
+    } else {
+        // Exibindo uma mensagem de erro
+        echo "<script>alert('Erro ao cadastrar o usuário:');</script>";
+        error_log($stmt->error);
+    }
+
+    // Fechando a declaração
+    $stmt->close();
 }
 
 // Fechando a conexão com o banco de dados
-$mysqli->close();
-
+if (isset($mysqli)) {
+    $mysqli->close();
+}
 ?>
-
 <?php
     require_once 'header.php';
 ?>
@@ -90,58 +85,58 @@ $mysqli->close();
                 <input type="email" id="email" name="email" required><br><br>
 
                 <label for="telefone">Telefone</label><br>
-                <i class="fa-solid fa-phone"></i>
+                <i></i>
                 <input type="text" id="telefone" name="telefone" placeholder="(00) 1234-5678"><br><br>
 
                 <label for="celular">Celular</label><br>
-                <i class="fa-solid fa-mobile"></i>
+                <i></i>
                 <input type="text" id="celular" name="celular" placeholder="(00) 12345-6789"><br><br>
 
                 <label for="data_nascimento">Data de Nascimento</label><br>
-                <i class="fa-solid fa-calendar"></i>
+                <i></i>
                 <input type="date" id="data_nascimento" name="data_nascimento"><br><br>
 
                 <label for="tipo_documento">Tipo do Documento</label><br>
-                <i class="fa-solid fa-id-card"></i>
+                <i></i>
                 <input type="text" id="tipo_documento" name="tipo_documento" required><br><br>
 
                 <label for="documento">Documento</label><br>
-                <i class="fa-solid fa-id-card"></i>
+                <i></i>
                 <input type="text" id="documento" name="documento" required><br><br>
 
                 <label for="cep">CEP</label><br>
-                <i class="fa-solid fa-map-pin"></i>
+                <i></i>
                 <input type="text" id="cep" name="cep" placeholder="00000-000"><br><br>
 
                 <label for="rua">Rua</label><br>
-                <i class="fa-solid fa-road"></i>
+                <i></i>
                 <input type="text" id="rua" name="rua" required><br><br>
 
                 <label for="numero">Número</label><br>
-                <i class="fa-solid fa-home"></i>
+                <i></i>
                 <input type="text" id="numero" name="numero" required><br><br>
 
                 <label for="bairro">Bairro</label><br>
-                <i class="fa-solid fa-city"></i>
+                <i></i>
                 <input type="text" id="bairro" name="bairro" required><br><br>
 
                 <label for="cidade">Cidade</label><br>
-                <i class="fa-solid fa-building"></i>
+                <i></i>
                 <input type="text" id="cidade" name="cidade" required><br><br>
 
                 <label for="uf">UF</label><br>
-                <i class="fa-solid fa-map"></i>
+                <i></i>
                 <input type="text" id="uf" name="uf" required><br><br>
 
                 <label for="complemento">Complemento</label><br>
-                <i class="fa-solid fa-home"></i>
+                <i></i>
                 <input type="text" id="complemento" name="complemento"><br><br>
 
                 <label for="password">Senha</label><br>
                 <i class="fa-solid fa-key"></i>
                 <input type="password" id="password" name="password" required><br><br><br>
 
-                <input type="submit" name="Cadastrar" id="cadastro_submit" value="Cadastrar">
+                <input type="submit" name="Cadastrar" id="cadastro_submit">
             </div><br>
             </form>
         </div>

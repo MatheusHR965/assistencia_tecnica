@@ -1,4 +1,9 @@
 <?php
+session_start();
+include_once '../PHP/includes/dbconnect.php';
+?>
+
+<?php
     require_once 'header.php';
 ?>
     <main>

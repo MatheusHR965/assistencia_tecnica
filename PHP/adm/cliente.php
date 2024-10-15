@@ -1,5 +1,5 @@
 <?php
-include_once '../auth.php';  //verificar se esta logado
+// include_once '../auth.php';  //verificar se esta logado
 include_once '../includes/dbconnect.php';
 
 $erro = '';
@@ -63,12 +63,9 @@ if (isset($_GET["id_cli"]) && is_numeric($_GET["id_cli"]) && isset($_GET["del"])
 $result = $mysqli->query("SELECT * FROM Cliente WHERE status_cli = 'ativo'");
 ?>
 
-<!-- <?php
-    // require_once 'headerCRUD.php';
-?> -->
-
+<?php require_once 'headerCRUD.php'; ?>
+<link rel="stylesheet" href="styleCRUD/stylecrud.css" type="text/css">
 <body>
-    <?php include_once '../../HTML/header.php'; ?>
     <h1>Cadastro de Clientes</h1>
 
     <?php if (!empty($erro)): ?>
@@ -137,7 +134,7 @@ $result = $mysqli->query("SELECT * FROM Cliente WHERE status_cli = 'ativo'");
         </script>
 
         <label for="data_nascimento">Data de Nascimento:</label><br>
-        <input type="date" name="data_nascimento"
+        <input type="date" name="data_nascimento" id="data_nascimento"
             value="<?= isset($_POST['data_nascimento']) ? htmlspecialchars($_POST['data_nascimento']) : '' ?>"
             required><br><br>
 
@@ -213,5 +210,4 @@ $result = $mysqli->query("SELECT * FROM Cliente WHERE status_cli = 'ativo'");
         </tbody>
     </table>
 </body>
-
 </html>

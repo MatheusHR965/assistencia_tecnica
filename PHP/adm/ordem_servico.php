@@ -1,5 +1,5 @@
 <?php
-include_once '../auth.php';  // Verificar se está logado
+
 include_once '../includes/dbconnect.php';
 
 $erro = '';
@@ -49,25 +49,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $result = $mysqli->query("SELECT os.*, c.nome_cli, u.nome_usu FROM Ordem_servico os LEFT JOIN Cliente c ON os.id_cli = c.id_cli LEFT JOIN Usuario u ON os.id_usu = u.id_usu");
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ordens de Serviço | Francisco Embalagens</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="style/mainAdmin.css">
-</head>
-
+<?php require_once 'headerCRUD.php'; ?>
+<link rel="stylesheet" href="styleCRUD/stylecrud.css" type="text/css">
 <body>
-    <?php include_once 'includes/header.php'; ?>
-
     <h1>Cadastro de Ordens de Serviço</h1>
 
     <!-- Exibindo mensagens de erro ou sucesso -->
@@ -98,7 +82,7 @@ $result = $mysqli->query("SELECT os.*, c.nome_cli, u.nome_usu FROM Ordem_servico
         </select><br><br>
 
         <label for="id_usu">Usuário:</label><br>
-            <input name="id_usu" value="<?php echo $_SESSION['nome'] ?>" disabled><br><br>
+            <input name="id_usu" value="<?php echo isset($_SESSION['nome']) ? $_SESSION['nome'] : ''; ?>" disabled><br><br>
 
         <button
             type="submit"><?= (isset($_POST['id_ordem']) && $_POST['id_ordem'] != -1) ? 'Salvar' : 'Cadastrar' ?></button>

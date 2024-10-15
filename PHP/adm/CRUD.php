@@ -1,0 +1,21 @@
+<?php
+    require_once '../includes/verificar_login.php';
+?>
+<?php
+    require_once 'headerCRUD.php';
+?>
+<main>
+    <h1>Área de Gerenciamento de Clientes</h1>
+    <div>
+        <a class="active" href="cliente.php">Cliente</a>
+        <a class="active" href="compra.php">Compra</a>
+        <a class="active" href="fornecedor.php">Fornecedor</a>
+        <a class="active" href="ordem_servico.php">Ordem Serviço</a>
+        <a class="active" href="pedido.php">Pedido</a>
+        <a class="active" href="produto.php">Produto</a>
+        <a class="active" href="servico.php">Serviço</a>
+    </div>
+</main>
+<?php
+require_once '../../HTML/footer.php';
+?>

@@ -1,6 +1,6 @@
 <?php
-include_once '../auth.php';  // Verifica se está logado
-include_once '..includes/db_connect.php';
+session_start();
+include_once '../includes/dbconnect.php';
 
 $erro = '';
 $success = '';
@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $data_compra = $_POST["data_compra"]; // pega a data do formulário ou a data atual
 
             $id_for = $_POST["id_for"];
-            $id_usu = $_POST["id_usu"];
+            $id_usu = $_SESSION["id"];
             $prev_entrega = $_POST["prev_entrega"];
             $preco_compra = $_POST["preco_compra"];
             $data_entrega_efetiva = !empty($_POST["data_entrega_efetiva"]) ? $_POST["data_entrega_efetiva"] : null;
@@ -65,26 +65,9 @@ $result = $mysqli->query("SELECT c.*, f.nome_for, u.nome_usu FROM Compra c LEFT 
 
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compras | Francisco Embalagens</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="../style/style.css">
-    <link rel="stylesheet" href="style/mainAdmin.css">
-</head>
-
+<?php require_once 'headerCRUD.php'; ?>
+<link rel="stylesheet" href="styleCRUD/stylecrud.css" type="text/css">
 <body>
-    <?php
-    include_once '../HTML/header.php';
-    ?>
     <h1>Cadastro de Compras</h1>
 
     <?php if (!empty($erro)): ?>
@@ -116,7 +99,7 @@ $result = $mysqli->query("SELECT c.*, f.nome_for, u.nome_usu FROM Compra c LEFT 
         </select><br><br>
 
         <label for="id_usu">Usuário:</label><br>
-        <input name="id_usu" type="text" value="<?php echo $_SESSION['nome'] ?>" disabled><br><br>
+        <input name="id_usu" type="text" value="<?php echo isset($_SESSION['nome']) ? $_SESSION['nome'] : ''; ?>" disabled><br><br>
 
         <label for="prev_entrega">Previsão de Entrega:</label><br>
         <input type="date" name="prev_entrega"
