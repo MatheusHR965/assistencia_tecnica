@@ -51,15 +51,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Remover Compra
-if (isset($_GET["id_compra"]) && is_numeric($_GET["id_compra"])) {
+if (isset($_GET["id_compra"]) && is_numeric($_GET["id_compra"]) && isset($_GET['delete']) && $_GET['delete'] == 'true') {
     $id_compra = (int) $_GET["id_compra"];
 
     $stmt = $mysqli->prepare("DELETE FROM Compra WHERE id_compra = ?");
-    $stmt->bind_param('i', $id_compra);
-    if ($stmt->execute()) {
-        $success = "Compra removida com sucesso.";
+    if ($stmt) {
+        $stmt->bind_param('i', $id_compra);
+        if ($stmt->execute()) {
+            $success = "Compra removida com sucesso.";
+        } else {
+            $erro = "Erro ao remover compra: " . htmlspecialchars($stmt->error);
+        }
     } else {
-        $erro = "Erro ao remover compra: " . htmlspecialchars($stmt->error);
+        $erro = "Erro ao preparar a consulta: " . htmlspecialchars($mysqli->error);
     }
 }
 

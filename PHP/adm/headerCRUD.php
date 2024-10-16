@@ -56,7 +56,7 @@
 <body>
     <header>
         <nav class="navbar d-flex justify-content-between align-items-center px-3">
-            <a class="navbar-brand" href="index.php">
+            <a class="navbar-brand" href="../../HTML/index.php">
                 <img src="../images/casaicon.png" class="d-inline-block align-top" alt="">
             </a>
         </nav>
@@ -72,14 +72,7 @@
             <i class="fas fa-bars"></i>
         </label>
         <ul>
-        <?php  
-            if ($nome == "NENHUM"){
-                echo '<li><a id="navbar" class="active" href="../../HTML/index.php">Home</a></li>';
-            }else{
-                echo '<li class="account" id="login"><a class="active" href="login.php" id="login-account">Olá, ' . htmlspecialchars($nome) . '</a></li>';
-            } 
-        ?>
-            <li><a class="active" href="index.php">HOME</a></li>
+            <li><a class="active" href="../../HTML/index.php">HOME</a></li>
             <li><a class="active" href="cliente.php">Cliente</a></li>
             <li><a class="active" href="compra.php">Compra</a></li>
             <li><a class="active" href="fornecedor.php">Fornecedor</a></li>

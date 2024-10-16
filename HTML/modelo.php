@@ -15,11 +15,11 @@ if (isset($_GET['id'])) {
     if ($result->num_rows > 0) {
         $produto = $result->fetch_assoc(); // Pega os detalhes do produto
     } else {
-        echo "<p>Produto não encontrado.</p>";
+        echo "<p class='erro'>Produto não encontrado.</p>";
         exit;
     }
 } else {
-    echo "<p>ID do produto não foi informado.</p>";
+    echo "<p class='aviso'>ID do produto não foi informado.</p>";
     exit;
 }
 
@@ -27,13 +27,14 @@ if (isset($_GET['id'])) {
 <?php
     require_once 'header.php';
 ?>
+
     <main>
         <div class="modelos1">
             <div id="fotos"></div>
                 <h1 id="titulomdl"><?= htmlspecialchars($produto['nome_prod']) ?></h1>
                 <p id="modeloinfo"><?= htmlspecialchars($produto['desc_prod']) ?></p>
             <form id="vazio" action="obrigado.html">
-        <button id="confirma" type="submit"><p>Entrar em Contato</p><i id="zap" class="fa-brands fa-square-whatsapp"></i></button>   
+        <button id="confirma" type="submit"><a href="https://wa.me/5519996161465"><p>Entrar em Contato</p></a><i id="zap" class="fa-brands fa-square-whatsapp"></i></button>   
         </div>
     </main>
     <?php

@@ -65,7 +65,6 @@
     // Pegando o ano atual
     $ano_atual = date('Y');
     // Definindo a data mínima e máxima para o ano atual
-    $data_minima = $ano_atual . '-01-01';
     $data_maxima = $ano_atual . '-12-31';
 ?>
 <?php
@@ -102,11 +101,57 @@
                 <i></i>
                 <input type="date" id="data_nascimento" name="data_nascimento" min="<?php echo $data_minima; ?>" max="<?php echo $data_maxima; ?>"><br><br>
 
-                <label for="tipo_documento">Tipo do Documento</label><br>
-                <i></i>
-                <input type="text" id="tipo_documento" name="tipo_documento" required><br><br>
+                <label for="tipo_documento">Tipo de Documento</label><br>
+                <select id="tipo_documento" name="tipo_documento" onchange="aplicarMascara()" required><br>
+                    <option value="CPF">CPF</option>
+                    <option value="CNPJ">CNPJ</option>
 
-                <label for="documento">Documento</label><br>
+                    <script>
+                    function aplicarMascara() {
+                        const tipoDocumento = document.getElementById("tipo_documento").value;
+                        const documento = document.getElementById("documento");
+
+                        if (tipoDocumento === "CPF") {
+                            documento.maxLength = 14; // 000.000.000-00
+                            documento.placeholder = "000.000.000-00";
+                            documento.value = ""; // Reseta o valor
+                            documento.oninput = function() {
+                                let valor = documento.value.replace(/\D/g, '');
+                                if (valor.length > 9) {
+                                    valor = valor.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+                                } else if (valor.length > 6) {
+                                    valor = valor.replace(/(\d{3})(\d{3})(\d{3})/, "$1.$2.$3");
+                                } else if (valor.length > 3) {
+                                    valor = valor.replace(/(\d{3})(\d{3})/, "$1.$2");
+                                } else if (valor.length > 0) {
+                                    valor = valor.replace(/(\d{3})/, "$1");
+                                }
+                                documento.value = valor;
+                            };
+                        } else if (tipoDocumento === "CNPJ") {
+                            documento.maxLength = 18; // 00.000.000/0000-00
+                            documento.placeholder = "00.000.000/0000-00";
+                            documento.value = ""; // Reseta o valor
+                            documento.oninput = function() {
+                                let valor = documento.value.replace(/\D/g, '');
+                                if (valor.length > 12) {
+                                    valor = valor.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+                                } else if (valor.length > 8) {
+                                    valor = valor.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, "$1.$2.$3/$4");
+                                } else if (valor.length > 5) {
+                                    valor = valor.replace(/(\d{2})(\d{3})(\d{3})/, "$1.$2.$3");
+                                } else if (valor.length > 2) {
+                                    valor = valor.replace(/(\d{2})(\d{3})/, "$1.$2");
+                                } else if (valor.length > 0) {
+                                    valor = valor.replace(/(\d{2})/, "$1");
+                                }
+                                documento.value = valor;
+                            };
+                        }
+                    }
+                </script>
+
+                <label for="documento">Numero do Documento</label><br>
                 <i></i>
                 <input type="text" id="documento" name="documento" required><br><br>
 
