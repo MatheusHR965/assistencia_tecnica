@@ -6,7 +6,7 @@ if (isset($_GET['id'])) {
     $id_produto = $_GET['id'];
 
     // Prepara a consulta para buscar os detalhes do produto
-    $stmt = $mysqli->prepare("SELECT * FROM Produtos WHERE id_prod = ?");
+    $stmt = $mysqli->prepare("SELECT * FROM Produto WHERE id_prod = ?");
     $stmt->bind_param('i', $id_produto);
     $stmt->execute();
     $result = $stmt->get_result();

@@ -67,7 +67,11 @@ $result = $mysqli->query("SELECT os.*, c.nome_cli, u.nome_usu FROM Ordem_servico
     <form action="ordem_servico.php" method="POST">
         <input type="hidden" name="id_ordem" value="<?= isset($_POST['id_ordem']) ? $_POST['id_ordem'] : -1 ?>">
 
-        <input type="hidden" name="data_ordem_servico" value="<?= date('Y-m-d H:i:s') ?>" required>
+        <input id="data" type="hidden" name="data_ordem_servico" value="<?= date('Y-m-d H:i:s') ?>" required>
+        <script>
+            // Definir a data mínima no campo de data usando JavaScript para garantir que o valor seja dinâmico
+            document.getElementById('data').min = new Date().toISOString().split('T')[0];
+        </script>
 
         <label for="id_cli">Cliente:</label><br>
         <select name="id_cli" required>
@@ -82,7 +86,7 @@ $result = $mysqli->query("SELECT os.*, c.nome_cli, u.nome_usu FROM Ordem_servico
         </select><br><br>
 
         <label for="id_usu">Usuário:</label><br>
-            <input name="id_usu" value="<?php echo isset($_SESSION['nome']) ? $_SESSION['nome'] : ''; ?>" disabled><br><br>
+            <input name="id_usu" value="<?php echo isset($_SESSION['nome_usu']) ? $_SESSION['nome_usu'] : ''; ?>" disabled><br><br>
 
         <button
             type="submit"><?= (isset($_POST['id_ordem']) && $_POST['id_ordem'] != -1) ? 'Salvar' : 'Cadastrar' ?></button>

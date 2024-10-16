@@ -1,66 +1,72 @@
 <?php
-session_start();
+    session_start();
 
-// Incluindo o arquivo de conexão com o banco de dados
-include_once '../PHP/includes/dbconnect.php';
+    // Incluindo o arquivo de conexão com o banco de dados
+    include_once '../PHP/includes/dbconnect.php';
 
-// Verificando se a conexão foi criada corretamente
-if (!isset($mysqli)) {
-    die("Erro: A conexão com o banco de dados não foi estabelecida.");
-}
-
-// Verificando se o formulário foi enviado
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Coletando os dados do formulário
-    $nome = $_POST['nome'];
-    $nome_social = $_POST['nomesocial'] ?? null;
-    $email = $_POST['email'];
-    $telefone = $_POST['telefone'] ?? null;
-    $celular = $_POST['celular'] ?? null;
-    $data_nascimento = $_POST['data_nascimento'] ?? null;
-    $tipo_documento = $_POST['tipo_documento'];
-    $documento = $_POST['documento'];
-    $uf = $_POST['uf'];
-    $cidade = $_POST['cidade'];
-    $bairro = $_POST['bairro'];
-    $rua = $_POST['rua'];
-    $numero = $_POST['numero'];
-    $complemento = $_POST['complemento'] ?? null;
-    $cep = $_POST['cep'] ?? null;
-    $senha = $_POST['password']; // Criptografando a senha
-    $data_cadastro = date('Y-m-d H:i:s'); // Pegando a data e hora atual
-    $status = 'ativo'; // Definindo o status do usuário como ativo
-
-    // Criando a query de inserção
-    $sql = "INSERT INTO Usuario (data_cadastro_usu, nome_usu, nome_social, email_usu, telefone_usu, celular_usu, data_nascimento, tipo_do_documento_usu, documento_usu, uf, cidade, bairro, rua, numero, complemento, cep, status_usu, senha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    // Preparando a declaração para evitar SQL Injection
-    $stmt = $mysqli->prepare($sql);
-    if ($stmt === false) {
-        die("Erro na preparação da declaração: " . $mysqli->error);
+    // Verificando se a conexão foi criada corretamente
+    if (!isset($mysqli)) {
+        die("Erro: A conexão com o banco de dados não foi estabelecida.");
     }
 
-    // Vinculando os parâmetros da query aos valores recebidos do formulário
-    $stmt->bind_param("ssssssssssssssssss", $data_cadastro, $nome, $nome_social, $email, $telefone, $celular, $data_nascimento, $tipo_documento, $documento, $uf, $cidade, $bairro, $rua, $numero, $complemento, $cep, $status, $senha);
+    // Verificando se o formulário foi enviado
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        // Coletando os dados do formulário
+        $nome = $_POST['nome'];
+        $nome_social = $_POST['nomesocial'] ?? null;
+        $email = $_POST['email'];
+        $telefone = $_POST['telefone'] ?? null;
+        $celular = $_POST['celular'] ?? null;
+        $data_nascimento = $_POST['data_nascimento'] ?? null;
+        $tipo_documento = $_POST['tipo_documento'];
+        $documento = $_POST['documento'];
+        $uf = $_POST['uf'];
+        $cidade = $_POST['cidade'];
+        $bairro = $_POST['bairro'];
+        $rua = $_POST['rua'];
+        $numero = $_POST['numero'];
+        $complemento = $_POST['complemento'] ?? null;
+        $cep = $_POST['cep'] ?? null;
+        $senha = $_POST['password']; // Criptografando a senha
+        $data_cadastro = date('Y-m-d H:i:s'); // Pegando a data e hora atual
+        $status = 'ativo'; // Definindo o status do usuário como ativo
 
-    // Executando a query
-    if ($stmt->execute()) {
-        // Redirecionando para uma página de sucesso ou exibindo uma mensagem de sucesso
-        echo "<script>alert('Usuário cadastrado com sucesso!'); window.location.href = 'index.php'; </script>";
-    } else {
-        // Exibindo uma mensagem de erro
-        echo "<script>alert('Erro ao cadastrar o usuário:');</script>";
-        error_log($stmt->error);
+        // Criando a query de inserção
+        $sql = "INSERT INTO Usuario (data_cadastro_usu, nome_usu, nome_social, email_usu, telefone_usu, celular_usu, data_nascimento, tipo_do_documento_usu, documento_usu, uf, cidade, bairro, rua, numero, complemento, cep, status_usu, senha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        // Preparando a declaração para evitar SQL Injection
+        $stmt = $mysqli->prepare($sql);
+        if ($stmt === false) {
+            die("Erro na preparação da declaração: " . $mysqli->error);
+        }
+
+        // Vinculando os parâmetros da query aos valores recebidos do formulário
+        $stmt->bind_param("ssssssssssssssssss", $data_cadastro, $nome, $nome_social, $email, $telefone, $celular, $data_nascimento, $tipo_documento, $documento, $uf, $cidade, $bairro, $rua, $numero, $complemento, $cep, $status, $senha);
+
+        // Executando a query
+        if ($stmt->execute()) {
+            // Redirecionando para uma página de sucesso ou exibindo uma mensagem de sucesso
+            echo "<script>alert('Usuário cadastrado com sucesso!'); window.location.href = 'index.php'; </script>";
+        } else {
+            // Exibindo uma mensagem de erro
+            echo "<script>alert('Erro ao cadastrar o usuário:');</script>";
+            error_log($stmt->error);
+        }
+
+        // Fechando a declaração
+        $stmt->close();
     }
 
-    // Fechando a declaração
-    $stmt->close();
-}
+    // Fechando a conexão com o banco de dados
+    if (isset($mysqli)) {
+        $mysqli->close();
+    }
 
-// Fechando a conexão com o banco de dados
-if (isset($mysqli)) {
-    $mysqli->close();
-}
+    // Pegando o ano atual
+    $ano_atual = date('Y');
+    // Definindo a data mínima e máxima para o ano atual
+    $data_minima = $ano_atual . '-01-01';
+    $data_maxima = $ano_atual . '-12-31';
 ?>
 <?php
     require_once 'header.php';
@@ -94,7 +100,7 @@ if (isset($mysqli)) {
 
                 <label for="data_nascimento">Data de Nascimento</label><br>
                 <i></i>
-                <input type="date" id="data_nascimento" name="data_nascimento"><br><br>
+                <input type="date" id="data_nascimento" name="data_nascimento" min="<?php echo $data_minima; ?>" max="<?php echo $data_maxima; ?>"><br><br>
 
                 <label for="tipo_documento">Tipo do Documento</label><br>
                 <i></i>
@@ -125,8 +131,36 @@ if (isset($mysqli)) {
                 <input type="text" id="cidade" name="cidade" required><br><br>
 
                 <label for="uf">UF</label><br>
-                <i></i>
-                <input type="text" id="uf" name="uf" required><br><br>
+                <select name="uf" required>
+                    <option value="">SELECIONE</option>
+                    <option value="AC">AC</option>
+                    <option value="AL">AL</option>
+                    <option value="AP">AP</option>
+                    <option value="AM">AM</option>
+                    <option value="BA">BA</option>
+                    <option value="CE">CE</option>
+                    <option value="DF">DF</option>
+                    <option value="ES">ES</option>
+                    <option value="GO">GO</option>
+                    <option value="MA">MA</option>
+                    <option value="MT">MT</option>
+                    <option value="MS">MS</option>
+                    <option value="MG">MG</option>
+                    <option value="PA">PA</option>
+                    <option value="PB">PB</option>
+                    <option value="PR">PR</option>
+                    <option value="PE">PE</option>
+                    <option value="PI">PI</option>
+                    <option value="RJ">RJ</option>
+                    <option value="RN">RN</option>
+                    <option value="RS">RS</option>
+                    <option value="RO">RO</option>
+                    <option value="RR">RR</option>
+                    <option value="SC">SC</option>
+                    <option value="SP">SP</option>
+                    <option value="SE">SE</option>
+                    <option value="TO">TO</option>
+                </select><br><br>
 
                 <label for="complemento">Complemento</label><br>
                 <i></i>

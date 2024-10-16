@@ -83,7 +83,7 @@ $result = $mysqli->query("SELECT c.*, f.nome_for, u.nome_usu FROM Compra c LEFT 
         <input type="hidden" name="id_compra" value="<?= isset($_GET['id_compra']) ? $_GET['id_compra'] : -1 ?>">
 
         <!-- Campo para a data da compra -->
-        <input type="hidden" name="data_compra" value="<?= date('Y-m-d H:i:s') ?>">
+        <input type="hidden" name="data_compra" value="<?php echo date('Y-m-d H:i:s') ?>">
 
         <label for="id_for">Fornecedor:</label><br>
         <select name="id_for" required>
