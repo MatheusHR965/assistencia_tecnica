@@ -8,18 +8,21 @@ $success = '';
 // Inserir/Atualizar Compra
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["data_compra"], $_POST["id_for"], $_SESSION['id'], $_POST["prev_entrega"], $_POST["preco_compra"])) {
-        if (empty($_POST["data_compra"]) || empty($_POST["id_for"]) || empty($_SESSION['id']) || empty($_POST["prev_entrega"]) || empty($_POST["preco_compra"])) {
+        // Validação de campos
+        $data_compra = $_POST["data_compra"];
+        $id_for = $_POST["id_for"];
+        $id_usu = $_SESSION["id"];
+        $prev_entrega = $_POST["prev_entrega"];
+        $preco_compra = str_replace(',', '.', preg_replace('/[R$ ]/', '', $_POST["preco_compra"])); // Remove caracteres não numéricos
+
+        if (empty($data_compra) || empty($id_for) || empty($id_usu) || empty($prev_entrega) || empty($preco_compra)) {
             $erro = "Todos os campos são obrigatórios.";
+        } elseif (!DateTime::createFromFormat('Y-m-d', $prev_entrega)) {
+            $erro = "A previsão de entrega deve ser uma data válida.";
+        } elseif (!is_numeric($preco_compra)) {
+            $erro = "O preço deve ser um valor numérico válido.";
         } else {
             $id_compra = isset($_POST["id_compra"]) ? $_POST["id_compra"] : -1;
-
-            // Verifique se o campo data_compra foi preenchido
-            $data_compra = $_POST["data_compra"]; // pega a data do formulário ou a data atual
-
-            $id_for = $_POST["id_for"];
-            $id_usu = $_SESSION["id"];
-            $prev_entrega = $_POST["prev_entrega"];
-            $preco_compra = $_POST["preco_compra"];
             $data_entrega_efetiva = !empty($_POST["data_entrega_efetiva"]) ? $_POST["data_entrega_efetiva"] : null;
 
             if ($id_compra == -1) { // Inserir nova compra
@@ -29,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($stmt->execute()) {
                     $success = "Compra registrada com sucesso.";
                 } else {
-                    $erro = "Erro ao registrar compra: " . $stmt->error;
+                    $erro = "Erro ao registrar compra: " . htmlspecialchars($stmt->error);
                 }
             } else { // Atualizar compra existente
                 $stmt = $mysqli->prepare("UPDATE Compra SET data_compra = ?, id_for = ?, id_usu = ?, prev_entrega = ?, data_entrega_efetiva = ?, preco_compra = ? WHERE id_compra = ?");
@@ -38,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($stmt->execute()) {
                     $success = "Compra atualizada com sucesso.";
                 } else {
-                    $erro = "Erro ao atualizar compra: " . $stmt->error;
+                    $erro = "Erro ao atualizar compra: " . htmlspecialchars($stmt->error);
                 }
             }
         }
@@ -56,7 +59,7 @@ if (isset($_GET["id_compra"]) && is_numeric($_GET["id_compra"])) {
     if ($stmt->execute()) {
         $success = "Compra removida com sucesso.";
     } else {
-        $erro = "Erro ao remover compra: " . $stmt->error;
+        $erro = "Erro ao remover compra: " . htmlspecialchars($stmt->error);
     }
 }
 
@@ -71,11 +74,11 @@ $result = $mysqli->query("SELECT c.*, f.nome_for, u.nome_usu FROM Compra c LEFT 
     <h1>Cadastro de Compras</h1>
 
     <?php if (!empty($erro)): ?>
-        <p style="color: red;"><?= htmlspecialchars($erro) ?></p>
+        <p class="error"><?= htmlspecialchars($erro) ?></p>
     <?php endif; ?>
 
     <?php if (!empty($success)): ?>
-        <p style="color: green;"><?= htmlspecialchars($success) ?></p>
+        <p class="success"><?= htmlspecialchars($success) ?></p>
     <?php endif; ?>
 
     <!-- Formulário para adicionar ou editar compra -->
@@ -139,7 +142,6 @@ $result = $mysqli->query("SELECT c.*, f.nome_for, u.nome_usu FROM Compra c LEFT 
                 // Define o valor formatado no campo
                 e.target.value = 'R$ ' + formattedValue;
             });
-
         </script>
 
         <label for="data_entrega_efetiva">Data de Entrega Efetiva (opcional):</label><br>
@@ -176,7 +178,7 @@ $result = $mysqli->query("SELECT c.*, f.nome_for, u.nome_usu FROM Compra c LEFT 
                     <td><?= htmlspecialchars($compra['nome_usu']) ?></td>
                     <td><?= htmlspecialchars($compra['prev_entrega']) ?></td>
                     <td><?= htmlspecialchars($compra['data_entrega_efetiva']) ?></td>
-                    <td><?= htmlspecialchars($compra['preco_compra']) ?></td>
+                    <td><?= 'R$ ' . number_format($compra['preco_compra'], 2, ',', '.') ?></td>
                     <td>
                         <a href="compra.php?id_compra=<?= $compra['id_compra'] ?>">Editar</a>
                         <a href="compra.php?id_compra=<?= $compra['id_compra'] ?>&delete=true"
@@ -187,5 +189,4 @@ $result = $mysqli->query("SELECT c.*, f.nome_for, u.nome_usu FROM Compra c LEFT 
         </tbody>
     </table>
 </body>
-
 </html>

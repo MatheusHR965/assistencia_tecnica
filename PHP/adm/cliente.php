@@ -5,7 +5,10 @@ include_once '../includes/dbconnect.php';
 $erro = '';
 $success = '';
 
-
+// Definindo a data mínima e máxima para o ano atual
+$ano_atual = date('Y');
+$data_minima = $ano_atual . '-01-01';
+$data_maxima = $ano_atual . '-12-31';
 
 // Inserir/Atualizar Cliente
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -45,6 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $erro = "Todos os campos obrigatórios devem ser preenchidos.";
     }
+    
 }
 
 // Desabilitar Cliente
@@ -136,7 +140,7 @@ $result = $mysqli->query("SELECT * FROM Cliente WHERE status_cli = 'ativo'");
         <label for="data_nascimento">Data de Nascimento:</label><br>
         <input type="date" name="data_nascimento" id="data_nascimento"
             value="<?= isset($_POST['data_nascimento']) ? htmlspecialchars($_POST['data_nascimento']) : '' ?>"
-            required><br><br>
+            min="<?= $data_minima ?>" max="<?= $data_maxima ?>" required><br><br>
 
         <label for="email_cli">Email:</label><br>
         <input type="email" name="email_cli"
@@ -150,6 +154,10 @@ $result = $mysqli->query("SELECT * FROM Cliente WHERE status_cli = 'ativo'");
         <input type="text" name="rua" value="<?= isset($_POST['rua']) ? htmlspecialchars($_POST['rua']) : '' ?>"
             required><br><br>
 
+        <label for="numero">Número:</label><br>
+        <input type="text" name="numero"
+            value="<?= isset($_POST['numero']) ? htmlspecialchars($_POST['numero']) : '' ?>"><br><br>
+
         <label for="bairro">Bairro:</label><br>
         <input type="text" name="bairro"
             value="<?= isset($_POST['bairro']) ? htmlspecialchars($_POST['bairro']) : '' ?>" required><br><br>
@@ -158,35 +166,24 @@ $result = $mysqli->query("SELECT * FROM Cliente WHERE status_cli = 'ativo'");
         <input type="text" name="cidade"
             value="<?= isset($_POST['cidade']) ? htmlspecialchars($_POST['cidade']) : '' ?>" required><br><br>
 
-        <label for="numero">Numero:</label><br>
-        <input type="number" name="numero" min="0"
-            value="<?= isset($_POST['numero']) ? htmlspecialchars($_POST['numero']) : '' ?>" required><br><br>
-
-        <label for="telefone_cli">Telefone:</label><br>
-        <input type="text" name="telefone_cli"
-            value="<?= isset($_POST['telefone_cli']) ? htmlspecialchars($_POST['telefone_cli']) : '' ?>"
+        <label for="uf">UF:</label><br>
+        <input type="text" name="uf" value="<?= isset($_POST['uf']) ? htmlspecialchars($_POST['uf']) : '' ?>"
             required><br><br>
 
-        <label for="uf">UF:</label><br>
-        <select name="uf" required>
-            <option value="invalido">SELECIONE</option>
-            <?php
-            $ufs = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
-            foreach ($ufs as $uf) {
-                echo '<option value="' . $uf . '" ' . (isset($_POST['uf']) && $_POST['uf'] === $uf ? 'selected' : '') . '>' . $uf . '</option>';
-            }
-            ?>
-        </select><br><br>
+        <label for="telefone_cli">Telefone:</label><br>
+        <input type="tel" name="telefone_cli"
+            value="<?= isset($_POST['telefone_cli']) ? htmlspecialchars($_POST['telefone_cli']) : '' ?>" required><br><br>
 
-        <input type="submit" value="Salvar"><br><br>
+        <button type="submit">Salvar</button>
     </form>
 
-    <!-- Listar clientes -->
+    <hr>
+
+    <!-- Tabela de clientes -->
     <h2>Clientes Ativos</h2>
-    <table border="1">
+    <table>
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Nome</th>
                 <th>Documento</th>
                 <th>Email</th>
@@ -194,20 +191,17 @@ $result = $mysqli->query("SELECT * FROM Cliente WHERE status_cli = 'ativo'");
             </tr>
         </thead>
         <tbody>
-            <?php while ($row = $result->fetch_assoc()): ?>
+            <?php while ($row = $result->fetch_assoc()) : ?>
                 <tr>
-                    <td><?= $row["id_cli"] ?></td>
-                    <td><?= $row["nome_cli"] ?></td>
-                    <td><?= $row["documento_cli"] ?></td>
-                    <td><?= $row["email_cli"] ?></td>
-                    <td>
-                        <a href="editar_cliente.php?id_cli=<?= $row["id_cli"] ?>">Editar</a>
-                        <a href="cliente.php?id_cli=<?= $row["id_cli"] ?>&del=true"
-                            onclick="return confirm('Tem certeza que deseja desabilitar este cliente?')">Desabilitar</a>
-                    </td>
+                    <td><?= htmlspecialchars($row['nome_cli']) ?></td>
+                    <td><?= htmlspecialchars($row['documento_cli']) ?></td>
+                    <td><?= htmlspecialchars($row['email_cli']) ?></td>
+                    <td><a href="cliente.php?id_cli=<?= $row['id_cli'] ?>&del=1">Desabilitar</a></td>
                 </tr>
             <?php endwhile; ?>
         </tbody>
     </table>
+
+    <?php include 'footerCRUD.php'; ?>
 </body>
 </html>
